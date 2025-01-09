@@ -1,0 +1,103 @@
+package tictactoe;
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        char[][] matrix = new char[3][3];
+
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        char[] charArray = input.toCharArray();
+
+        //counting input char`s
+        int countX;
+        int countO;
+        int countEmpty;
+        countX = inputCounter(charArray, 'X');
+        countO = inputCounter(charArray, 'O');
+        countEmpty = inputCounter(charArray, '_');
+        //System.out.printf("X: %d,O: %d,'_': %d%n", countX, countO, countEmpty);
+
+        //filling matrix from input
+        matrix = fillMatrix(matrix, charArray);
+
+        //checking game state
+        //Impossible - (X wins && O wins) or countX >> countO and vice-versa
+        // X wins - 'X' + 'X' + 'X' = 264
+        // O wins - 'O' + 'O' + 'O' = 237
+        //Draw - countX + countO = 9 && neither X nor O wins
+        //Game not finished - neither side wins but the grid still has empty cells
+        String output;
+
+        boolean winX = false;
+        boolean winO = false;
+        int resDiagonal1 = matrix[0][0] + matrix[1][1] + matrix[2][2];
+        int resDiagonal2 = matrix[0][2] + matrix[1][1] + matrix[2][0];
+        for (int i = 0; i < 3; i++) {
+            int resRow = matrix[i][0] + matrix[i][1] + matrix[i][2];
+            int resColumn = matrix[0][i] + matrix[1][i] + matrix[2][i];
+            if (resDiagonal1 == 264 || resDiagonal2 == 264 || resRow == 264 || resColumn == 264) {
+                winX = true;
+            }
+            if (resDiagonal1 == 237 || resDiagonal2 == 237 || resRow == 237 || resColumn == 237) {
+                winO = true;
+            }
+        }
+
+        if (Math.abs(countX - countO) > 1) {
+            output = "Impossible";
+        } else if (winX && winO) {
+            output = "Impossible";
+        } else if (winX) {
+            output = "X wins";
+        } else if (winO) {
+            output = "O wins";
+        } else if ((countX + countO == 9) && !winO && !winX) {
+            output = "Draw";
+        } else if (countEmpty > 0 && !winX && !winO) {
+            output = "Game not finished";
+        } else { output = "Wierd state of game";}
+
+        // print matrix
+        printBoardState(matrix);
+
+        System.out.println(output);
+
+        scanner.close();
+    }
+
+    private static int inputCounter(char[] array, char c) {
+        int counter = 0;
+        for (int s = 0; s < 9; s++) {
+            if (c == array[s]) {
+                counter += 1;
+            }
+        }
+        return counter;
+    }
+
+    private static char[][] fillMatrix(char[][] matrix, char[] charArray) {
+        int k;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                k = 3 * i + j;
+                matrix[i][j] = charArray[k];
+            }
+        }
+        return matrix;
+    }
+
+    private static void printBoardState(char[][] matrix) {
+        System.out.println("---------");
+        for (char[] chars : matrix) {
+            System.out.print('|' + " ");
+            for (char aChar : chars) {
+                System.out.print(aChar + " ");
+            }
+            System.out.print('|');
+            System.out.println();
+        }
+        System.out.println("---------");
+    }
+}
